@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Open Thought</title>
+    <style>
+        html, body {
+            padding: 0;
+            margin: 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            background-color: black;
+            color: white;
+        }
+        .header {
+            height: 100px;
+            width: 100%;
+            box-shadow: 2px 2px 5px black;
+            background-color: rgb(107, 131, 0);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo {
+            background-color: white;
+            border-radius: 9999px;
+            border: black 2px solid;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+        }
+        .wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        @media only screen and (max-width: 767px) {
+            .wrapper {
+                max-width: 95%;
+            }
+        }
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .nav-list {
+            display: flex;
+            align-items: center;
+            gap: min(20px, 2rem);
+            list-style: none;
+        }
+        .nav-list li a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            transition: 0.3s ease-in-out;
+        }
+        .nav-list li a:hover {
+            text-decoration: underline;
+            transform: scale(1.05);
+        }
+        .title h3 {
+            font-weight: 200;
+            text-align: center;
+        }
+        .title h1 {
+            font-size: 35px;
+            text-align: center;
+        }
+        .active {
+            text-decoration: underline !important;
+        }
+        .blog-stats {
+            display: flex;
+            gap: 10px;
+            margin: 1rem 0;
+        }
+        .blog-stats button {
+            padding: 8px 16px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgb(107, 131, 0);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .blog-stats button:hover {
+            background-color: rgba(107, 131, 0, 0.3);
+        }
+        hr {
+            border-color: rgb(107, 131, 0);
+            margin: 1rem 0;
+        }
+        #blog-content {
+            line-height: 1.6;
+        }
+        /* Comment Popup */
+        .comment-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(600px, 90vw);
+            max-height: 70vh;
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 2px solid rgb(107, 131, 0);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .comment-box.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .comment-box-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .comment-box-header h3 {
+            color: rgb(107, 131, 0);
+            font-size: 1.2rem;
+        }
+        .comment-box-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        #comments {
+            max-height: 40vh;
+            overflow-y: auto;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .com {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(107, 131, 0, 0.3);
+        }
+        .com p {
+            margin-bottom: 0.5rem;
+        }
+        .com-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .com-actions button {
+            background: none;
+            border: none;
+            color: rgb(107, 131, 0);
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .com-actions button:hover {
+            text-decoration: underline;
+        }
+        .reply {
+            margin-left: 20px;
+            border-left: 2px solid rgb(107, 131, 0);
+            padding-left: 10px;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .comment-box form {
+            display: flex;
+            gap: 10px;
+        }
+        .comment-box form input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid rgb(107, 131, 0);
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.05);
+            color: white;
+        }
+        .comment-box form button {
+            padding: 8px 16px;
+            background-color: rgb(107, 131, 0);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+        }
+        .comment-box form button:hover {
+            background-color: rgba(107, 131, 0, 0.8);
+        }
+        .error, .success {
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .error {
+            background-color: rgba(255, 0, 0, 0.2);
+            color: red;
+        }
+        .success {
+            background-color: rgba(0, 255, 0, 0.2);
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <section class="header">
+        <div class="wrapper">
+            <div class="nav">
+                <a class="logo" href="/home">
+                    <h1>⌛</h1>
+                </a>
+                <ul class="nav-list">
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="/explore">Explore</a></li>
+                    <li><a href="/create">Create a Blog</a></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="body">
+        <div class="wrapper">
+            <div class="title">
+                <h1 id="blog-title"></h1>
+                <div id="user-details"></div>
+            </div>
+            <div class="blog-stats">
+                <div id="blog-comments"></div>
+                <div id="blog-likes"></div>
+            </div>
+            <hr>
+            <div id="blog-content"></div>
+        </div>
+    </section>
+
+    <div class="comment-box">
+        <div class="comment-box-header">
+            <h3>Comments</h3>
+            <button id="close-comment-box">✕</button>
+        </div>
+        <div id="message"></div>
+        <div id="comments"></div>
+        <form id="comment-form">
+            <input required type="text" placeholder="Enter your comment" id="comment-input">
+            <button type="submit">Comment</button>
+        </form>
+    </div>
+
+    <script>
+        const title = document.getElementById("blog-title");
+        const details = document.getElementById("user-details");
+        const content = document.getElementById("blog-content");
+        const blog_comments = document.getElementById("blog-comments");
+        const blog_likes = document.getElementById("blog-likes");
+        const comment_box = document.querySelector(".comment-box");
+        const comments = document.getElementById("comments");
+        const comment_form = document.getElementById("comment-form");
+        const comment_input = document.getElementById("comment-input");
+        const close_comment_box = document.getElementById("close-comment-box");
+        const messageDiv = document.getElementById("message");
+        const user = localStorage.getItem("userId");
+        let blog_id = "";
+        let replyingTo = null; // Track if replying to a comment
+
+        function showMessage(type, text) {
+            messageDiv.innerHTML = `<div class="${type}">${text}</div>`;
+            setTimeout(() => messageDiv.innerHTML = "", 3000);
+        }
+
+        function buildComment(comment, isReply = false) {
+            const comDiv = document.createElement("div");
+            comDiv.classList.add(isReply ? "reply" : "com");
+            comDiv.dataset.commentId = comment._id;
+
+            const text = document.createElement("p");
+            text.textContent = comment.text;
+            comDiv.appendChild(text);
+
+            const actions = document.createElement("div");
+            actions.classList.add("com-actions");
+
+            // Like button
+            const likeBtn = document.createElement("button");
+            likeBtn.textContent = `♥️ ${comment.likes.length}`;
+            likeBtn.addEventListener("click", async () => {
+                try {
+                    const response = await fetch("http://localhost:3009/like-comment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            user_id: user,
+                            comment_id: comment._id
+                        })
+                    });
+                    const data = await response.json();
+                    if (!data.Success) {
+                        showMessage("error", data.Message);
+                        return;
+                    }
+                    likeBtn.textContent = `♥️ ${Number(likeBtn.textContent.split(" ")[1]) + 1}`;
+                    showMessage("success", data.Message);
+                } catch (error) {
+                    showMessage("error", error.message);
+                }
+            });
+            actions.appendChild(likeBtn);
+
+            // Reply button (only for top-level comments)
+            if (!isReply) {
+                const replyBtn = document.createElement("button");
+                replyBtn.textContent = "Reply";
+                replyBtn.addEventListener("click", () => {
+                    replyingTo = comment._id;
+                    comment_input.placeholder = `Replying to comment...`;
+                    comment_input.focus();
+                });
+                actions.appendChild(replyBtn);
+            }
+
+            // Replies button (if any)
+            if (comment.comments && comment.comments.length > 0) {
+                const repliesBtn = document.createElement("button");
+                repliesBtn.textContent = `Replies (${comment.comments.length})`;
+                repliesBtn.addEventListener("click", () => {
+                    const repliesContainer = comDiv.querySelector(".replies");
+                    if (repliesContainer) {
+                        repliesContainer.remove();
+                        repliesBtn.textContent = `Replies (${comment.comments.length})`;
+                    } else {
+                        const repliesDiv = document.createElement("div");
+                        repliesDiv.classList.add("replies");
+                        comment.comments.forEach(reply => {
+                            const replyDiv = buildComment(reply, true);
+                            repliesDiv.appendChild(replyDiv);
+                        });
+                        comDiv.appendChild(repliesDiv);
+                        repliesBtn.textContent = "Hide Replies";
+                    }
+                });
+                actions.appendChild(repliesBtn);
+            }
+
+            comDiv.appendChild(actions);
+            return comDiv;
+        }
+
+        function buildBlog(blog) {
+            title.textContent = blog.title;
+            content.textContent = blog.body;
+            blog_id = blog._id;
+
+            const comment_btn = document.createElement("button");
+            comment_btn.textContent = `🗨️ ${blog.comments.length}`;
+            const like_btn = document.createElement("button");
+            like_btn.textContent = `♥️ ${blog.likes.length}`;
+            blog_comments.appendChild(comment_btn);
+            blog_likes.appendChild(like_btn);
+
+            if (blog.comments.length > 0) {
+                comments.innerHTML = "";
+                blog.comments.forEach(c => {
+                    comments.appendChild(buildComment(c));
+                });
+            }
+
+            comment_btn.addEventListener("click", () => {
+                comment_box.classList.toggle("visible");
+            });
+
+            close_comment_box.addEventListener("click", () => {
+                comment_box.classList.remove("visible");
+            });
+
+            like_btn.addEventListener("click", async () => {
+                try {
+                    const response = await fetch("http://localhost:3009/like", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            user_id: user,
+                            blog_id: blog._id
+                        })
+                    });
+                    const data = await response.json();
+                    if (!data.Success) {
+                        showMessage("error", data.Message);
+                        return;
+                    }
+                    like_btn.textContent = `♥️ ${Number(like_btn.textContent.split(" ")[1]) + 1}`;
+                    showMessage("success", data.Message);
+                } catch (error) {
+                    showMessage("error", error.message);
+                }
+            });
+        }
+
+        comment_form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            if (!user) {
+                showMessage("error", "Please log in to comment.");
+                return;
+            }
+
+            const url = replyingTo ? "http://localhost:3009/reply" : "http://localhost:3009/comment";
+            const body = replyingTo
+                ? { user_id: user, comment_id: replyingTo, text: comment_input.value }
+                : { blog_id: blog_id, user_id: user, text: comment_input.value };
+
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                const data = await response.json();
+                if (!data.Success) {
+                    showMessage("error", data.Message);
+                    return;
+                }
+
+                const comment = document.createElement("div");
+                comment.classList.add(replyingTo ? "reply" : "com");
+                comment.dataset.commentId = data.Comment?._id || data.Blog?.comments[data.Blog.comments.length - 1]._id;
+                
+                const text = document.createElement("p");
+                text.textContent = comment_input.value;
+                comment.appendChild(text);
+
+                const actions = document.createElement("div");
+                actions.classList.add("com-actions");
+                const likeBtn = document.createElement("button");
+                likeBtn.textContent = `♥️ 0`;
+                likeBtn.addEventListener("click", async () => {
+                    try {
+                        const response = await fetch("http://localhost:3009/like-comment", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                user_id: user,
+                                comment_id: comment.dataset.commentId
+                            })
+                        });
+                        const data = await response.json();
+                        if (!data.Success) {
+                            showMessage("error", data.Message);
+                            return;
+                        }
+                        likeBtn.textContent = `♥️ ${Number(likeBtn.textContent.split(" ")[1]) + 1}`;
+                        showMessage("success", data.Message);
+                    } catch (error) {
+                        showMessage("error", error.message);
+                    }
+                });
+                actions.appendChild(likeBtn);
+
+                if (!replyingTo) {
+                    const replyBtn = document.createElement("button");
+                    replyBtn.textContent = "Reply";
+                    replyBtn.addEventListener("click", () => {
+                        replyingTo = comment.dataset.commentId;
+                        comment_input.placeholder = `Replying to comment...`;
+                        comment_input.focus();
+                    });
+                    actions.appendChild(replyBtn);
+                }
+
+                comment.appendChild(actions);
+
+                if (replyingTo) {
+                    const parentComment = comments.querySelector(`.com[data-comment-id="${replyingTo}"]`);
+                    let repliesContainer = parentComment.querySelector(".replies");
+                    if (!repliesContainer) {
+                        repliesContainer = document.createElement("div");
+                        repliesContainer.classList.add("replies");
+                        parentComment.appendChild(repliesContainer);
+                    }
+                    repliesContainer.appendChild(comment);
+                    const repliesBtn = parentComment.querySelector(".com-actions button:nth-child(3)");
+                    if (repliesBtn) {
+                        const count = Number(repliesBtn.textContent.match(/\d+/)[0]) + 1;
+                        repliesBtn.textContent = `Replies (${count})`;
+                    } else {
+                        const newRepliesBtn = document.createElement("button");
+                        newRepliesBtn.textContent = `Replies (1)`;
+                        newRepliesBtn.addEventListener("click", () => {
+                            if (repliesContainer.style.display === "none") {
+                                repliesContainer.style.display = "block";
+                                newRepliesBtn.textContent = "Hide Replies";
+                            } else {
+                                repliesContainer.style.display = "none";
+                                newRepliesBtn.textContent = `Replies (1)`;
+                            }
+                        });
+                        parentComment.querySelector(".com-actions").appendChild(newRepliesBtn);
+                    }
+                } else {
+                    comments.appendChild(comment);
+                    const comment_btn = blog_comments.querySelector("button");
+                    comment_btn.textContent = `🗨️ ${Number(comment_btn.textContent.split(" ")[1]) + 1}`;
+                }
+
+                showMessage("success", data.Message);
+                comment_input.value = "";
+                comment_input.placeholder = "Enter your comment";
+                replyingTo = null;
+            } catch (error) {
+                showMessage("error", error.message);
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            if (!user) {
+                showMessage("error", "Please log in to view or comment.");
+                comment_form.style.display = "none";
+            }
+
+            const query = window.location.href.split("?")[1];
+            if (!query) {
+                showMessage("error", "Invalid blog URL.");
+                return;
+            }
+
+            const [variable, value] = query.split("=");
+            try {
+                const response = await fetch(`http://localhost:3009/blog?${variable}=${value}`, {
+                    method: "GET"
+                });
+                const data = await response.json();
+                if (!data.Success) {
+                    showMessage("error", data.Message);
+                    return;
+                }
+                buildBlog(data.Blog);
+            } catch (error) {
+                showMessage("error", error.message);
+            }
+        });
+    </script>
+</body>
+</html>

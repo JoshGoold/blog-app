@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Explore | Open Thought</title>
+    <style>
+        html, body{
+            padding: 0;
+            margin: 0;   
+            font-family: Verdana, Geneva, Tahoma, sans-serif;     
+        }
+      .header {
+        height: 100px;
+        width: 100%;
+        box-shadow: 2px 2px 5px black;
+        background-color: rgb(107, 131, 0);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: sticky;
+        top: 0;
+      }
+
+      .logo{
+        background-color: white;
+        border-radius: 9999px;
+        border: black 2px solid;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+      }
+
+      .wrapper{
+        max-width: 800px;
+        margin: 0 auto;
+
+        @media only screen and (max-width: 767px){
+            max-width: 95%;
+        }
+      }
+
+      .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+      }
+
+      .nav-list {
+        display: flex;
+        align-items: center;
+        gap: min(20px, 2rem);
+        list-style: none;
+      }
+
+      .nav-list li a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 16px;
+        transition: 0.3s ease-in-out;
+      }
+
+      .nav-list li a:hover {
+        text-decoration: underline;
+        transform: scale(1.05);
+      }
+
+      .title h3{
+        font-weight: 200;
+        text-align: center;
+      }
+      .title h1{
+        font-size: 35px;
+        text-align: center;
+      }
+      #categories{
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: min(16px, 2rem);
+        padding: 20px;
+      }
+      .category_block{
+        position: relative;
+       height: 300px;
+       border: 1px solid rgb(107, 131, 0);
+      }
+      .category_anchor, .blog-anchor{
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        background-color: black;
+        width: 150px;
+        text-align: center;
+        padding: 8px 16px;
+        text-decoration: none;
+        color: white;
+        transform: translate(-50%);
+        transition: 0.1s ease-in-out;
+        @media only screen and (max-width: 767px){
+            width: 70%;
+            font-size: 12px;
+        }
+      }
+      .category_anchor:hover, .blog-anchor:hover{
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.39);
+        padding: 8px 18px;
+      }
+      .category_icon{
+        position: absolute;
+        left: 50%;
+        top: 20%;
+        transform: translate(-50%, -50%);
+        font-size: 100px;
+      }
+      .blog-title{
+        position: absolute;
+        left: 50%;
+        top: 30%;
+        font-weight: 400;
+        transform: translate(-50%, -50%);
+        font-size: 30px;
+      }
+      .active{
+        text-decoration: underline !important;
+      }
+
+      #category-list{
+        display: flex;
+        justify-content: center;
+        gap: min(16px, 2rem);
+        list-style: none;
+        margin: 10px 0;
+      }
+      #category-list li a{
+        padding: 8px 16px;
+        color: black;
+        background-color: white;
+        border: 2px solid black;
+        text-decoration: none;
+        font-size: 12px;
+      }
+
+      .category-active{
+        background-color: black !important;
+        color: white !important;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <section class="header">
+      <div class="wrapper">
+        <div class="nav">
+          <a class="logo" href="/home">
+            <h1>⌛</h1>
+          </a>
+          <ul class="nav-list">
+            <li><a href="/home">Home</a></li>
+            <li><a class="active" href="/explore">Explore</a></li>
+            <li><a href="/create">Create a Blog</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="body">
+        <div class="wrapper">
+            <div class="title">
+                <h1>Explore | Open Thought</h1>
+                <h3>The Blog Network</h3>
+            </div>
+            <div class="">
+                <ul id="category-list"></ul>
+            </div>
+        </div>
+    </section>
+  </body>
+
+  <section class="explore">
+    <div class="wrapper">
+        <div id="categories"></div>
+    </div>
+  </section>
+
+  <script>
+    const categories_container = document.getElementById("categories")
+    const categories = ["Entertainment", "Sports", "Games", "Technology", "Philosophy", "Theology"]
+    const icons = {
+        "Entertainment": "📺",
+        "Sports": "🏈",
+        "Games": "🎮",
+        "Technology": "📱",
+        "Philosophy": "💭",
+        "Theology": "✝️"
+    }
+    const category_list = document.getElementById("category-list")
+    function buildCategoryList(current_category){
+        categories.forEach(category=> {
+            const li = document.createElement("li")
+            const a = document.createElement("a")
+            if(category === current_category){
+                a.classList.add("category-active")
+            }
+            a.textContent= category;
+            a.href=`/explore?category=${category}`
+            li.appendChild(a)
+            category_list.appendChild(li)
+        })
+    }
+
+    function buildCategoriesMenu (){
+        categories.forEach(category=> {
+            const container = document.createElement("div")
+            container.classList.add("category_block")
+            const anchor = document.createElement("a")
+            anchor.href = `/explore?category=${category}`;
+            anchor.textContent = category;
+            anchor.classList.add("category_anchor")
+            const icon = document.createElement("h1")
+            icon.textContent = icons[category]
+            icon.classList.add("category_icon")
+            container.appendChild(icon)
+            container.appendChild(anchor)
+            categories_container.appendChild(container)
+        })
+    }
+
+    function buildBlogMenu(blogs){
+        blogs.forEach(blog=> {
+            const container = document.createElement("div")
+            const title = document.createElement("h1")
+            const anchor = document.createElement("a");
+            container.classList.add("category_block")
+            title.textContent=blog.title;
+            title.classList.add("blog-title")
+            anchor.href = `/read?blog_id=${blog._id}`;
+            anchor.classList.add("blog-anchor")
+            anchor.textContent= "Read Blog";
+            container.append(title, anchor)
+            categories_container.appendChild(container)
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", async()=> {
+        if(!window.location.href.includes("?")){
+             buildCategoriesMenu()
+        } else{
+            const query = window.location.href.split("?")[1]
+            const [variable, value]= query.split("=")
+
+            console.log(query)
+            console.log(variable)
+            console.log(value)
+
+            try {
+                const response = await fetch(`http://localhost:3009/blogs?${variable}=${value}`, {method: "GET"})
+                const data = await response.json()
+                console.log(data)
+                if(!data.Success){
+                    buildCategoryList(value)
+                    return alert(data.Message)
+                }
+                buildCategoryList(value)
+                buildBlogMenu(data.Blogs)
+
+            } catch (error) {
+                console.error(error)
+                alert(error.message)
+            }
+        }
+   
+    })
+
+
+  </script>
+</html>
