@@ -256,7 +256,7 @@
             console.log(value)
 
             try {
-                const response = await fetch(`http://localhost:3009/blogs?${variable}=${value}`, {method: "GET"})
+                const response = await fetch(`https://blog-app-1qcr.vercel.app/blogs?${variable}=${value}`, {method: "GET"})
                 const data = await response.json()
                 console.log(data)
                 if(!data.Success){

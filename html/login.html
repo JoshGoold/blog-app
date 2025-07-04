@@ -159,8 +159,8 @@
             const email = document.getElementById('email').value;
 
             const url = isLogin
-                ? 'http://localhost:3009/login'
-                : 'http://localhost:3009/create-user';
+                ? 'https://blog-app-1qcr.vercel.app/login'
+                : 'https://blog-app-1qcr.vercel.app/create-user';
             const body = isLogin
                 ? { username, password }
                 : { username, password, email };

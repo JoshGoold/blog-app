@@ -23,9 +23,6 @@ const get_readpage = require("./routes/Serve_HTML/get_readpage")
 const get_create = require("./routes/Serve_HTML/get_create")
 const read = require("./utils/read")
 
-
-
-
 const app = express();
 
 app.use(express.json())
@@ -49,12 +46,6 @@ app.use("/", get_homepage)
 app.use("/", get_explorepage)
 app.use("/", get_readpage)
 app.use("/", get_create)
-
-
-
-
-
-
 
 
 
